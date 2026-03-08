@@ -92,7 +92,7 @@ GET /members
 ## 1. Clone the Repository
 
 ```
-git clone https://github.com/YOUR_USERNAME/aceest-fitness-cicd-pipeline.git
+git clone https://github.com/ngratnakumar/aceest-fitness-cicd-pipeline.git
 cd aceest-fitness-cicd-pipeline
 ```
 
