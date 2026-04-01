@@ -60,7 +60,8 @@ def test_user_registration_and_dashboard():
             follow_redirects=True,
         )
         assert login_response.status_code == 200
-        assert b"This is your user dashboard." in login_response.data
+        assert b"User Dashboard" in login_response.data
+        assert b"Your Workout Plans" in login_response.data
 
 
 def test_admin_can_create_trainer_and_assign_user():
