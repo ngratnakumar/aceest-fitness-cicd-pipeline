@@ -335,6 +335,43 @@ def delete_workout_plan(plan_id):
     flash('Workout plan deleted successfully.', 'success')
     return redirect(url_for('trainer_dashboard'))
 
+@app.route('/trainer/workout-plans/<int:plan_id>/edit', methods=['GET', 'POST'])
+@login_required
+@role_required('trainer')
+def edit_workout_plan(plan_id):
+    plan = WorkoutPlan.query.filter_by(id=plan_id, trainer_id=current_user.id).first_or_404()
+    assigned_users = User.query.filter_by(trainer_id=current_user.id, role='user').order_by(User.username).all()
+
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        details = request.form.get('details', '').strip()
+        user_id = request.form.get('user_id', type=int)
+
+        if not title or not details or not user_id:
+            flash('All fields are required.', 'danger')
+            return redirect(url_for('edit_workout_plan', plan_id=plan.id))
+
+        selected_user = User.query.filter_by(
+            id=user_id, role='user', trainer_id=current_user.id
+        ).first()
+        if not selected_user:
+            flash('Selected user is not assigned to you.', 'danger')
+            return redirect(url_for('edit_workout_plan', plan_id=plan.id))
+
+        plan.title = title
+        plan.details = details
+        plan.user_id = selected_user.id
+        db.session.commit()
+
+        flash('Workout plan updated successfully.', 'success')
+        return redirect(url_for('trainer_dashboard'))
+
+    return render_template(
+        'edit_workout_plan.html',
+        plan=plan,
+        assigned_users=assigned_users
+    )
+
 @app.route('/logout')
 @login_required
 def logout():
