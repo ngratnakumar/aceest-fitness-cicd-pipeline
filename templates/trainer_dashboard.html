@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card shadow-sm p-4">
+    <h2 class="mb-2">Trainer Dashboard</h2>
+    <p class="text-muted">Hello {{ trainer_profile.name if trainer_profile else current_user.username }}.</p>
+    <p class="mb-4">Specialization: <span class="badge bg-info text-dark">{{ trainer_profile.specialization if trainer_profile else 'Not set' }}</span></p>
+
+    <h4>Assigned Users</h4>
+    <div class="table-responsive mt-3">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in assigned_users %}
+                    <tr>
+                        <td>{{ user.username }}</td>
+                        <td>Assigned</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="2" class="text-muted">No users assigned yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

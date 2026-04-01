@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-4 card p-4 shadow">
+        <h3 class="text-center">Register</h3>
+        <p class="text-muted text-center">Create a normal user account here.</p>
+        <form method="POST">
+            <div class="mb-3">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label>Role</label>
+                <select name="role" class="form-select">
+                    <option value="user">Member (User)</option>
+                    <option value="trainer">Trainer</option>
+                    <option value="admin">Gym Manager (Admin)</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Create Account</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

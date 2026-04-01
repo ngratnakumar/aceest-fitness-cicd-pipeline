@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-5 shadow text-center">
+    <h1>Welcome, {{ current_user.username }}!</h1>
+    <p class="lead">This is your user dashboard.</p>
+    <p class="mb-4">Role: <span class="badge bg-info text-dark">{{ current_user.role.upper() }}</span></p>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card bg-primary text-white p-3 h-100">
+                <h5>My Workout Plan</h5>
+                <p class="mb-0">Check your assigned schedule here.</p>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card bg-secondary text-white p-3 h-100">
+                <h5>My Trainer</h5>
+                {% if assigned_trainer %}
+                    <p class="mb-0">{{ assigned_trainer.username }}</p>
+                {% else %}
+                    <p class="mb-0">No trainer assigned yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
