@@ -163,10 +163,12 @@ def dashboard():
         return redirect(url_for('admin_dashboard'))
     if current_user.role == 'trainer':
         return redirect(url_for('trainer_dashboard'))
+
+    workout_plans = WorkoutPlan.query.filter_by(user_id=current_user.id).order_by(WorkoutPlan.id.desc()).all()
     return render_template(
         'dashboard.html',
         assigned_trainer=current_user.assigned_trainer,
-        workout_plans=current_user.workout_plans,
+        workout_plans=workout_plans,
     )
 
 @app.route('/admin')
@@ -310,7 +312,17 @@ def create_workout_plan():
     db.session.commit()
 
     flash('Workout plan created successfully.', 'success')
-    return redirect(url_for('create_workout_plan'))
+    return redirect(url_for('trainer_dashboard'))
+
+@app.route('/trainer/workout-plans/<int:plan_id>/delete', methods=['POST'])
+@login_required
+@role_required('trainer')
+def delete_workout_plan(plan_id):
+    plan = WorkoutPlan.query.filter_by(id=plan_id, trainer_id=current_user.id).first_or_404()
+    db.session.delete(plan)
+    db.session.commit()
+    flash('Workout plan deleted successfully.', 'success')
+    return redirect(url_for('trainer_dashboard'))
 
 @app.route('/logout')
 @login_required
