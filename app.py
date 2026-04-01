@@ -85,6 +85,14 @@ def initialize_database():
         )
         db.session.commit()
 
+
+def _dashboard_endpoint_for(user):
+    if user.role == 'admin':
+        return 'admin_dashboard'
+    if user.role == 'trainer':
+        return 'trainer_dashboard'
+    return 'dashboard'
+
 # --- ROUTES ---
 
 @app.route('/')
@@ -301,6 +309,39 @@ def get_trainers():
         }
         for trainer in trainers
     ])
+
+
+@app.route('/change-password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        current_password = request.form.get('current_password', '').strip()
+        new_password = request.form.get('new_password', '').strip()
+        confirm_password = request.form.get('confirm_password', '').strip()
+
+        if not current_password or not new_password or not confirm_password:
+            flash('All password fields are required.', 'danger')
+            return redirect(url_for('change_password'))
+
+        if not check_password_hash(current_user.password, current_password):
+            flash('Current password is incorrect.', 'danger')
+            return redirect(url_for('change_password'))
+
+        if new_password != confirm_password:
+            flash('New password and confirm password do not match.', 'danger')
+            return redirect(url_for('change_password'))
+
+        if len(new_password) < 6:
+            flash('New password must be at least 6 characters.', 'danger')
+            return redirect(url_for('change_password'))
+
+        current_user.password = generate_password_hash(new_password, method='pbkdf2:sha256')
+        db.session.commit()
+
+        flash('Password updated successfully.', 'success')
+        return redirect(url_for(_dashboard_endpoint_for(current_user)))
+
+    return render_template('change_password.html')
 
 @app.route('/health')
 def health():
