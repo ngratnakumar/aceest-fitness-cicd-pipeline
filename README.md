@@ -1,308 +1,230 @@
-# ACEest Fitness & Gym – CI/CD Pipeline Implementation
+# ACEest Fitness & Gym - DevOps CI/CD Assignment
 
 ## Project Overview
+Flask-based fitness management app with role-based access for:
+- Admin
+- Trainer
+- User
 
-This project demonstrates the implementation of a **modern DevOps CI/CD pipeline** for a Flask-based Gym Management application. The objective of the project is to automate the development lifecycle from **local development to automated build validation using Jenkins and GitHub Actions**.
-
-The application simulates a simple **fitness and gym management system** that allows retrieval and management of gym members through REST API endpoints.
-
-The DevOps pipeline ensures:
-
-* Code version control using **Git and GitHub**
-* Automated testing using **Pytest**
-* Environment consistency using **Docker containerization**
-* Continuous Integration using **GitHub Actions**
-* Automated build validation using **Jenkins**
-
-This setup ensures that every code change is automatically tested and verified before being considered stable.
-
----
-
-# Technologies Used
-
-| Technology     | Purpose                         |
-| -------------- | ------------------------------- |
-| Python (Flask) | Web application framework       |
-| Git            | Version control system          |
-| GitHub         | Remote repository hosting       |
-| Pytest         | Unit testing framework          |
-| Docker         | Containerization of application |
-| GitHub Actions | Continuous Integration pipeline |
-| Jenkins        | Automated build server          |
-| VS Code        | Development environment         |
+Features:
+- Login/logout
+- User registration
+- Trainer assignment
+- Workout plan create/edit/delete
+- User dashboard
+- Trainer dashboard
+- Seeded demo data
+- Pytest coverage
+- Docker containerization
+- Jenkins pipeline
+- GitHub Actions workflow
 
 ---
 
-# Project Structure
-
-```
-ACEest-Fitness-Gym
-│
-├── app.py
-├── requirements.txt
-├── Dockerfile
-├── README.md
-├── .gitignore
-│
-├── tests
-│   └── test_app.py
-│
-└── .github
-    └── workflows
-        └── main.yml
-```
-
-Description of key files:
-
-* **app.py** – Flask web application
-* **requirements.txt** – Python dependencies
-* **Dockerfile** – Container configuration
-* **tests/test_app.py** – Unit tests for API endpoints
-* **main.yml** – GitHub Actions CI/CD pipeline
-* **README.md** – Project documentation
+## Tech Stack
+- Python 3.10+
+- Flask
+- Flask-SQLAlchemy
+- Flask-Login
+- Flask-Admin
+- Pytest
+- Docker
+- Jenkins
+- GitHub Actions
 
 ---
 
-# Application Features
-
-The Flask application provides the following endpoints:
-
-| Endpoint   | Method | Description           |
-| ---------- | ------ | --------------------- |
-| `/`        | GET    | Home endpoint         |
-| `/members` | GET    | Retrieve gym members  |
-| `/members` | POST   | Add new member        |
-| `/health`  | GET    | Health check endpoint |
-
-Example response:
-
-```
-GET /members
-
-[
- { "id": 1, "name": "Rahul", "plan": "Premium" },
- { "id": 2, "name": "Anita", "plan": "Basic" }
-]
-```
+## Repository Structure
+- `app.py` - Flask app
+- `templates/` - HTML templates
+- `tests/` - Pytest suite
+- `seed_data.py` - Demo data seeder
+- `Dockerfile` - App container image
+- `jenkins.Dockerfile` - Jenkins container image
+- `Jenkinsfile` - Jenkins pipeline
+- `.github/workflows/main.yml` - GitHub Actions workflow
+- `notes/` - Release notes
 
 ---
 
-# Local Development Setup
+## Local Setup
 
-## 1. Clone the Repository
-
+### 1) Create virtual environment
+```powershell
+python -m venv venv
+venv\Scripts\activate
 ```
-git clone https://github.com/ngratnakumar/aceest-fitness-cicd-pipeline.git
-cd aceest-fitness-cicd-pipeline
-```
 
----
-
-## 2. Install Dependencies
-
-```
+### 2) Install dependencies
+```powershell
 pip install -r requirements.txt
 ```
 
----
-
-## 3. Run the Flask Application
-
-```
+### 3) Run application
+```powershell
 python app.py
 ```
 
-The application will start on:
+Open:
+- `http://127.0.0.1:5000`
 
+---
+
+## Seed Demo Data
+
+Seeder creates:
+- 10 trainers
+- 10 users
+- trainer-user mappings
+- workout plans
+
+Run:
+```powershell
+python seed_data.py
 ```
-http://localhost:5000
+
+Default credentials:
+- Admin: `admin / admin123`
+- Trainer password: `trainer123`
+- User password: `user123`
+
+---
+
+## Run Tests
+```powershell
+pytest -q
 ```
 
 ---
 
-# Running Unit Tests
+## Docker: Run Application
 
-This project uses **Pytest** for automated testing.
-
-Run the test suite with:
-
-```
-pytest
+### Build image
+```powershell
+docker build -t aceest-fitness .
 ```
 
-Expected output:
-
-```
-3 passed in X seconds
-```
-
-The tests verify:
-
-* Home endpoint response
-* Members API functionality
-* Health check endpoint
-
----
-
-# Docker Containerization
-
-Docker is used to package the application with all dependencies to ensure consistent execution across different environments.
-
-## Build Docker Image
-
-```
-docker build -t aceest-fit-app .
-```
-
-## Run Docker Container
-
-```
-docker run -p 5000:5000 aceest-fit-app
-```
-
-Access the application:
-
-```
-http://localhost:5000
+### Run container
+```powershell
+docker run -p 5000:5000 aceest-fitness
 ```
 
 ---
 
-# Continuous Integration with GitHub Actions
+## Jenkins Setup Using Docker
 
-The CI pipeline is implemented using **GitHub Actions**.
-
-Pipeline configuration is located at:
-
-```
-.github/workflows/main.yml
+### 1) Build Jenkins image
+```powershell
+docker build -f jenkins.Dockerfile -t jenkins-custom:latest .
 ```
 
-The pipeline is triggered on:
-
-* Push to repository
-* Pull requests
-
-## Pipeline Stages
-
-1. Checkout source code
-2. Setup Python environment
-3. Install project dependencies
-4. Execute Pytest test suite
-5. Build Docker container
-
-Example pipeline workflow:
-
-```
-Developer Push Code
-        ↓
-GitHub Repository
-        ↓
-GitHub Actions CI Pipeline
-        ↓
-Install Dependencies
-        ↓
-Run Unit Tests
-        ↓
-Build Docker Image
+### 2) Create Jenkins volume
+```powershell
+docker volume create jenkins_home
 ```
 
-This ensures that every code change is validated automatically.
+### 3) Run Jenkins container
+```powershell
+docker run -d --name jenkins `
+  -p 8080:8080 -p 50000:50000 `
+  -v jenkins_home:/var/jenkins_home `
+  -v /var/run/docker.sock:/var/run/docker.sock `
+  --restart unless-stopped `
+  jenkins-custom:latest
+```
+
+### 4) Get Jenkins admin password
+```powershell
+docker exec jenkins cat /var/jenkins_home/secrets/initialAdminPassword
+```
+
+### 5) Open Jenkins
+Go to:
+- `http://localhost:8080`
+
+### 6) Initial Jenkins setup
+- Paste admin password
+- Install suggested plugins
+- Create admin user
+- Finish setup
 
 ---
 
-# Jenkins Build Integration
+## Jenkins Pipeline Execution
 
-Jenkins is used as an additional **build validation layer**.
+### Jenkinsfile
+The repository includes `Jenkinsfile` in the root directory.
 
-Jenkins performs the following steps:
+### Jenkins job setup
+1. Open Jenkins dashboard
+2. Click **New Item**
+3. Enter job name, select **Pipeline**
+4. Under **Pipeline**
+   - Definition: `Pipeline script from SCM`
+   - SCM: `Git`
+   - Repository URL: your GitHub repo URL
+   - Branch: `*/main`
+   - Script Path: `Jenkinsfile`
+5. Save
+6. Click **Build Now**
 
-1. Pull the latest code from GitHub
-2. Install dependencies
-3. Execute Pytest test suite
-4. Build Docker image
+### Jenkins pipeline stages
+- Checkout
+- Setup Virtual Environment
+- Install Dependencies
+- Run Tests
+- Docker Build
 
-Example Jenkins build script:
-
-```
-python3 -m pip install -r requirements.txt
-python3 -m pytest
-docker build -t aceest-fit-app .
-```
-
-This ensures that the application builds successfully in a **controlled CI environment**.
-
----
-
-# DevOps Workflow Architecture
-
-```
-Developer (VS Code)
-        │
-        │ git push
-        ▼
-GitHub Repository
-        │
-        │ triggers
-        ▼
-GitHub Actions CI Pipeline
-        │
-        ├── Install Dependencies
-        ├── Run Pytest Tests
-        └── Build Docker Image
-        │
-        ▼
-Jenkins Build Server
-        │
-        ├── Pull latest code
-        ├── Install dependencies
-        ├── Run tests
-        └── Build Docker image
-        │
-        ▼
-Validated Application Build
-```
+### Expected result
+Pipeline should finish with:
+- `Finished: SUCCESS`
 
 ---
 
-# Version Control Strategy
+## GitHub Actions
+Workflow file:
+- `.github/workflows/main.yml`
 
-The project follows structured Git commits.
+It should run on:
+- `push`
+- `pull_request`
 
-Examples:
-
-```
-feat: add flask gym management API
-test: add pytest unit tests
-docker: add Docker container configuration
-ci: add GitHub Actions pipeline
-docs: add README documentation
-```
-
-This approach improves traceability and maintainability.
+Typical stages:
+- Build / lint
+- Docker image build
+- Pytest execution
 
 ---
 
-# Future Improvements
-
-Possible enhancements to the project include:
-
-* Add user authentication
-* Integrate a database (PostgreSQL / MySQL)
-* Implement Docker Compose
-* Deploy application to a cloud platform (AWS / Azure / GCP)
-* Add code quality checks (Flake8, Black)
+## Release Notes
+Release notes are maintained in:
+- `notes/v3.0.0.md`
+- `notes/v3.1.0.md`
+- `notes/v3.1.1.md`
+- `notes/v3.1.2.md`
+- `notes/v3.1.3.md`
 
 ---
 
-# Author
-
-**BOLLAPRAGADA NAGA RATNA KUMAR**
-**2025HT66015**
-Introduction to DevOps (Assignment 1)
+## Validation Checklist
+- App runs locally
+- Seeder works
+- Pytest passes
+- Docker build succeeds
+- Jenkins pipeline succeeds
+- GitHub Actions workflow succeeds
+- README and release notes are present
 
 ---
 
-# License
+## Demo Credentials
+- Admin: `admin / admin123`
+- Trainer: `trainer123`
+- User: `user123`
 
-This project is created for educational purposes as part of a DevOps CI/CD assignment.
+---
+
+## Notes
+- Username values do not contain spaces.
+- Footer is visible on all pages, including login.
+- Jenkins is configured through Docker for reproducible setup.
