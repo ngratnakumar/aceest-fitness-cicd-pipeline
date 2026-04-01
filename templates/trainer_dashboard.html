@@ -60,6 +60,22 @@
         <span class="badge bg-secondary">{{ workout_plans|length }} total</span>
     </div>
 
+    <form method="GET" action="{{ url_for('trainer_dashboard') }}" class="row g-2 mb-3">
+        <div class="col-md-6">
+            <input
+                type="text"
+                name="user"
+                class="form-control"
+                placeholder="Search by username"
+                value="{{ user_search }}"
+            >
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="{{ url_for('trainer_dashboard') }}" class="btn btn-outline-secondary">Reset</a>
+        </div>
+    </form>
+
     <div class="table-responsive mt-2">
         <table class="table table-bordered table-hover align-middle">
             <thead class="table-light">

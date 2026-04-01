@@ -291,10 +291,15 @@ def trainer_dashboard():
         role='user'
     ).order_by(User.username).all()
 
-    workout_plans = WorkoutPlan.query.filter_by(
-        trainer_id=current_user.id
-    ).order_by(WorkoutPlan.id.desc()).all()
+    user_search = request.args.get('user', '').strip().lower()
 
+    plans_query = WorkoutPlan.query.filter_by(trainer_id=current_user.id)
+
+    if user_search:
+        matching_user_ids = [u.id for u in assigned_users if user_search in u.username.lower()]
+        plans_query = plans_query.filter(WorkoutPlan.user_id.in_(matching_user_ids or [-1]))
+
+    workout_plans = plans_query.order_by(WorkoutPlan.id.desc()).all()
     assigned_user_map = {u.id: u.username for u in assigned_users}
 
     return render_template(
@@ -303,6 +308,7 @@ def trainer_dashboard():
         assigned_users=assigned_users,
         workout_plans=workout_plans,
         assigned_user_map=assigned_user_map,
+        user_search=user_search,
     )
 
 @app.route('/trainer/workout-plans', methods=['POST'])
