@@ -1,10 +1,36 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card shadow-sm p-4">
+<div class="card shadow-sm p-4 mb-4">
     <h2 class="mb-2">Trainer Dashboard</h2>
     <p class="text-muted">Hello {{ trainer_profile.name if trainer_profile else current_user.username }}.</p>
     <p class="mb-4">Specialization: <span class="badge bg-info text-dark">{{ trainer_profile.specialization if trainer_profile else 'Not set' }}</span></p>
 
+    <h4>Create / Assign Workout Plan</h4>
+    <form method="POST" action="{{ url_for('create_workout_plan') }}" class="row g-3">
+        <div class="col-md-4">
+            <label class="form-label">Plan Title</label>
+            <input type="text" name="title" class="form-control" required>
+        </div>
+        <div class="col-md-5">
+            <label class="form-label">Plan Details</label>
+            <input type="text" name="details" class="form-control" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Assign To User</label>
+            <select name="user_id" class="form-select" required>
+                <option value="">Select user</option>
+                {% for user in assigned_users %}
+                    <option value="{{ user.id }}">{{ user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-12">
+            <button type="submit" class="btn btn-primary">Save Workout Plan</button>
+        </div>
+    </form>
+</div>
+
+<div class="card shadow-sm p-4 mb-4">
     <h4>Assigned Users</h4>
     <div class="table-responsive mt-3">
         <table class="table table-striped align-middle">
@@ -30,4 +56,37 @@
     </div>
 </div>
 
+<div class="card shadow-sm p-4">
+    <h4>Your Workout Plans</h4>
+    <div class="table-responsive mt-3">
+        <table class="table table-bordered align-middle">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Details</th>
+                    <th>Assigned User</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for plan in workout_plans %}
+                    <tr>
+                        <td>{{ plan.title }}</td>
+                        <td>{{ plan.details }}</td>
+                        <td>{{ plan.user.username if plan.user else 'N/A' }}</td>
+                        <td>
+                            <form method="POST" action="{{ url_for('delete_workout_plan', plan_id=plan.id) }}" onsubmit="return confirm('Delete this plan?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="text-muted">No workout plans added yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

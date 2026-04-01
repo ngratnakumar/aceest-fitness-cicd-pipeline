@@ -51,6 +51,16 @@ class Trainer(db.Model):
     specialization = db.Column(db.String(100), nullable=False)
     user = db.relationship('User', backref=db.backref('trainer_profile', uselist=False), foreign_keys=[user_id])
 
+class WorkoutPlan(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(150), nullable=False)
+    details = db.Column(db.Text, nullable=False)
+    trainer_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
+    trainer = db.relationship('User', foreign_keys=[trainer_id], backref='created_workout_plans')
+    user = db.relationship('User', foreign_keys=[user_id], backref='workout_plans')
+
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(User, int(user_id))
@@ -153,8 +163,11 @@ def dashboard():
         return redirect(url_for('admin_dashboard'))
     if current_user.role == 'trainer':
         return redirect(url_for('trainer_dashboard'))
-    return render_template('dashboard.html', assigned_trainer=current_user.assigned_trainer)
-
+    return render_template(
+        'dashboard.html',
+        assigned_trainer=current_user.assigned_trainer,
+        workout_plans=current_user.workout_plans,
+    )
 
 @app.route('/admin')
 @login_required
@@ -259,13 +272,45 @@ def delete_trainer(trainer_user_id):
 @login_required
 @role_required('trainer')
 def trainer_dashboard():
+    trainer_profile = Trainer.query.filter_by(user_id=current_user.id).first()
     assigned_users = User.query.filter_by(trainer_id=current_user.id, role='user').order_by(User.username).all()
-    trainer_profile = current_user.trainer_profile
+    workout_plans = WorkoutPlan.query.filter_by(trainer_id=current_user.id).order_by(WorkoutPlan.id.desc()).all()
+
     return render_template(
         'trainer_dashboard.html',
-        assigned_users=assigned_users,
         trainer_profile=trainer_profile,
+        assigned_users=assigned_users,
+        workout_plans=workout_plans,
     )
+
+@app.route('/trainer/workout-plans', methods=['POST'])
+@login_required
+@role_required('trainer')
+def create_workout_plan():
+    title = request.form.get('title', '').strip()
+    details = request.form.get('details', '').strip()
+    user_id = request.form.get('user_id', type=int)
+
+    if not title or not details or not user_id:
+        flash('All fields are required.', 'danger')
+        return redirect(url_for('trainer_dashboard'))
+
+    user = User.query.filter_by(id=user_id, role='user', trainer_id=current_user.id).first()
+    if not user:
+        flash('Selected user is not assigned to you.', 'danger')
+        return redirect(url_for('trainer_dashboard'))
+
+    plan = WorkoutPlan(
+        title=title,
+        details=details,
+        trainer_id=current_user.id,
+        user_id=user.id,
+    )
+    db.session.add(plan)
+    db.session.commit()
+
+    flash('Workout plan created successfully.', 'success')
+    return redirect(url_for('create_workout_plan'))
 
 @app.route('/logout')
 @login_required
