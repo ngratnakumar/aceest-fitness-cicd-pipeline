@@ -286,14 +286,23 @@ def delete_trainer(trainer_user_id):
 @role_required('trainer')
 def trainer_dashboard():
     trainer_profile = Trainer.query.filter_by(user_id=current_user.id).first()
-    assigned_users = User.query.filter_by(trainer_id=current_user.id, role='user').order_by(User.username).all()
-    workout_plans = WorkoutPlan.query.filter_by(trainer_id=current_user.id).order_by(WorkoutPlan.id.desc()).all()
+    assigned_users = User.query.filter_by(
+        trainer_id=current_user.id,
+        role='user'
+    ).order_by(User.username).all()
+
+    workout_plans = WorkoutPlan.query.filter_by(
+        trainer_id=current_user.id
+    ).order_by(WorkoutPlan.id.desc()).all()
+
+    assigned_user_map = {u.id: u.username for u in assigned_users}
 
     return render_template(
         'trainer_dashboard.html',
         trainer_profile=trainer_profile,
         assigned_users=assigned_users,
         workout_plans=workout_plans,
+        assigned_user_map=assigned_user_map,
     )
 
 @app.route('/trainer/workout-plans', methods=['POST'])
