@@ -1,0 +1,120 @@
+2026-04-02 01:36:10,231 | INFO | Seeder started
+2026-04-02 01:36:10,231 | INFO | Log file: C:/Users/ratnakumar/Documents/aceest-fitness-cicd-pipeline/logs/20260402_013610_seed.log
+2026-04-02 01:36:10,233 | INFO | Deleted old DB: aceest_fitness.db
+2026-04-02 01:36:11,613 | INFO | Dropping all tables
+2026-04-02 01:36:11,654 | INFO | Creating all tables
+2026-04-02 01:36:11,674 | INFO | Creating admin user
+2026-04-02 01:36:17,782 | INFO | Created trainers: 10
+2026-04-02 01:36:18,495 | ERROR | Seeder failed
+Traceback (most recent call last):
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: NOT NULL constraint failed: member.plan
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\seed_data.py", line 166, in seed
+    db.session.flush()
+    ~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\scoping.py", line 924, in flush
+    return self._proxied.flush(objects=objects)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4331, in flush
+    self._flush(objects)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4466, in _flush
+    with util.safe_reraise():
+         ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 121, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\session.py", line 4427, in _flush
+    flush_context.execute()
+    ~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 466, in execute
+    rec.execute(self)
+    ~~~~~~~~~~~^^^^^^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 642, in execute
+    util.preloaded.orm_persistence.save_obj(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self.mapper,
+        ^^^^^^^^^^^^
+        uow.states_for_mapper_hierarchy(self.mapper, False, False),
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        uow,
+        ^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 93, in save_obj
+    _emit_insert_statements(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        base_mapper,
+        ^^^^^^^^^^^^
+    ...<3 lines>...
+        insert,
+        ^^^^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1233, in _emit_insert_statements
+    result = connection.execute(
+        statement,
+        params,
+        execution_options=execution_options,
+    )
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1419, in execute
+    return meth(
+        self,
+        distilled_parameters,
+        execution_options or NO_OPTIONS,
+    )
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\sql\elements.py", line 527, in _execute_on_connection
+    return connection._execute_clauseelement(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        self, distilled_params, execution_options
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1641, in _execute_clauseelement
+    ret = self._execute_context(
+        dialect,
+    ...<8 lines>...
+        cache_hit=cache_hit,
+    )
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1846, in _execute_context
+    return self._exec_single_context(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~^
+        dialect, context, statement, parameters
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1986, in _exec_single_context
+    self._handle_dbapi_exception(
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        e, str_statement, effective_parameters, cursor, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 2363, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\base.py", line 1967, in _exec_single_context
+    self.dialect.do_execute(
+    ~~~~~~~~~~~~~~~~~~~~~~~^
+        cursor, str_statement, effective_parameters, context
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\venv\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^
+sqlalchemy.exc.IntegrityError: (sqlite3.IntegrityError) NOT NULL constraint failed: member.plan
+[SQL: INSERT INTO member (name, "plan") VALUES (?, ?)]
+[parameters: ('Aarav Sharma', None)]
+(Background on this error at: https://sqlalche.me/e/20/gkpj)

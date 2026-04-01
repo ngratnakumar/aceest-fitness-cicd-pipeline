@@ -1,0 +1,13 @@
+2026-04-02 01:35:03,239 | INFO | Seeder started
+2026-04-02 01:35:03,240 | INFO | Log file: C:/Users/ratnakumar/Documents/aceest-fitness-cicd-pipeline/logs/20260402_013503_seed.log
+2026-04-02 01:35:03,242 | INFO | Deleted old DB: aceest_fitness.db
+2026-04-02 01:35:04,700 | INFO | Dropping all tables
+2026-04-02 01:35:04,720 | INFO | Creating all tables
+2026-04-02 01:35:04,741 | INFO | Creating admin user
+2026-04-02 01:35:11,107 | INFO | Created trainers: 10
+2026-04-02 01:35:11,766 | ERROR | Seeder failed
+Traceback (most recent call last):
+  File "C:\Users\ratnakumar\Documents\aceest-fitness-cicd-pipeline\seed_data.py", line 157, in seed
+    "trainer_id": t.id if "trainer_id" in user_cols else None,
+                                          ^^^^^^^^^
+NameError: name 'user_cols' is not defined

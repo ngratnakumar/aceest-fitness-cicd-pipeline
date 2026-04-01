@@ -1,6 +1,7 @@
 import os
 from functools import wraps
 from pathlib import Path
+from sqlalchemy import text
 
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -9,9 +10,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 os.makedirs(app.instance_path, exist_ok=True)
-database_path = Path(app.instance_path) / f'aceest_fitness_{os.getpid()}.db'
 
-# --- CONFIGURATION ---
+DB_FILENAME = os.environ.get("ACEEST_DB_FILE", "aceest_fitness.db")
+database_path = Path(app.instance_path) / DB_FILENAME
+
 app.config['SECRET_KEY'] = 'aceest_fitness_secret_123'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + database_path.as_posix()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -81,19 +83,28 @@ def role_required(*roles):
     return decorator
 
 
-def initialize_database():
-    db.create_all()
+def _ensure_user_trainer_id_column():
+    # SQLite schema patch for old DBs
+    cols = db.session.execute(text('PRAGMA table_info("user")')).fetchall()
+    col_names = {row[1] for row in cols}  # row[1] = column name
+    if "trainer_id" not in col_names:
+        db.session.execute(text('ALTER TABLE "user" ADD COLUMN trainer_id INTEGER'))
+        db.session.commit()
 
-    default_admin = User.query.filter_by(username='admin').first()
-    if default_admin is None:
-        db.session.add(
-            User(
+def initialize_database():
+    with app.app_context():
+        db.create_all()
+        _ensure_user_trainer_id_column()  # must run BEFORE any User query
+
+        default_admin = User.query.filter_by(username='admin').first()
+        if not default_admin:
+            default_admin = User(
                 username='admin',
                 password=generate_password_hash('admin123', method='pbkdf2:sha256'),
-                role='admin',
+                role='admin'
             )
-        )
-        db.session.commit()
+            db.session.add(default_admin)
+            db.session.commit()
 
 
 def _dashboard_endpoint_for(user):
