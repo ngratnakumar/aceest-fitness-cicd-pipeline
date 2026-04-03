@@ -223,8 +223,3 @@ Release notes are maintained in:
 - User: `user123`
 
 ---
-
-## Notes
-- Username values do not contain spaces.
-- Footer is visible on all pages, including login.
-- Jenkins is configured through Docker for reproducible setup.
