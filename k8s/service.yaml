@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: aceest-fitness-svc
+spec:
+  selector:
+    app: aceest-fitness
+  ports:
+  - port: 80
+    targetPort: 5000
+  type: NodePort
